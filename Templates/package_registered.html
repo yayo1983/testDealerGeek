@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block titulo %} Tests de Dealer {% endblock %}
+{% block css %}
+  <style>
+	img { width:100px; }
+  </style>
+{% endblock %}
+{% block encabezado %}
+  	<div class="row">
+		<div class="col-sm-4"></div>
+		<div class="col-sm-4"><h1>Menú</h1></div>
+		<div class="col-sm-4"></div>
+	</div>
+{% endblock %}
+
+{% block contenido %}
+  <div class="row">
+		<div class="col-sm-4"></div>
+		<div class="col-sm-4"><h2>Paquete registrado</h2></div>
+		<div class="col-sm-4"></div>
+	</div>
+   <div class="row">
+		<div class="col-sm-4"></div>
+		<div class="col-sm-4">
+          {% if ID %}
+            <span>El paquete tiene el ID: <strong>{{ ID }} </strong> para su rastreo en la plataforma</span>
+          {% else %}
+            <span>No hay ID para su rastreo en la plataforma</span>
+          {% endif %}
+        </div>
+		<div class="col-sm-4"></div>
+	</div>
+
+{% endblock %}
