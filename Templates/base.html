@@ -19,6 +19,7 @@
                   {% if user.is_authenticated %}
                       <li><a href='/'>Usuario: {{ user.get_username }}</a></li>
                       <li><a href="{% url 'logout'%}">Salir de sesion</a></li>
+                      <li><a href="{% url 'report-package' %}">Reporte de paquete</a></li>
                   {% else %}
                     <li><a href="{% url 'login'%}">Autenticar</a></li>
                   {% endif %}

@@ -1,4 +1,4 @@
-from .forms import PackageForm, TrackingForm, UpdateTrackingForm
+from .forms import PackageForm, TrackingForm, UpdateTrackingForm, ReportPackageForm
 
 
 class FactoryForm:
@@ -18,6 +18,11 @@ class FactoryForm:
             if parameter == '':
                 return UpdateTrackingForm()
             return UpdateTrackingForm(parameter)
+
+        elif "ReportPackageForm" == name:
+            if parameter == '':
+                return ReportPackageForm()
+            return ReportPackageForm(parameter)
 
         else:
             raise Exception("Sorry, class not implemented")

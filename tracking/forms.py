@@ -103,3 +103,15 @@ class UpdateTrackingForm(forms.Form):
             return False
         except Package.DoesNotExist:
             return False
+
+
+class ReportPackageForm(forms.Form):
+    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), label='Fecha para reportar')
+
+    def report_traquing(self):
+        try:
+            trackings = Tracking.objects.filter(date=self.cleaned_data['date'])
+            serializer_tracking = TrackingSerializers(trackings, many=True)
+            return serializer_tracking.data
+        except:
+            return False

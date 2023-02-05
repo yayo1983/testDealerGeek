@@ -47,3 +47,19 @@ def update_package(request):
             return redirect('update-package', {'form': form})
     form = factory.create_form('UpdateTrackingForm')
     return render(request, 'package_update_form.html', {'package': {}, 'tracking_package': [], 'form': form})
+
+
+@login_required
+def report_package(request):
+    factory = FactoryForm()
+    if request.method == "POST":
+        form = factory.create_form('ReportPackageForm', request.POST)
+        if form.is_valid():
+            result = form.save_update()
+            if result:
+                if result == -1:
+                    return redirect('package_report_form', {'form': form})
+                return render(request, 'package_report_form.html', {'package': result})
+            return redirect('package_report_form', {'form': form})
+    form = factory.create_form('UpdateTrackingForm')
+    return render(request, 'package_report_form.html', {'package': {}, 'tracking_package': [], 'form': form})

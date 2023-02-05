@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block titulo %} Tests de Dealer {% endblock %}
+{% block css %}
+  <style>
+	img { width:100px; }
+  </style>
+{% endblock %}
+{% block encabezado %}
+  <h1>Menú</h1>
+{% endblock %}
+
+{% block contenido %}
+<h2>Paquete actualizado</h2>
+  {% if package %}
+      <span>El paquete con el ID: <strong>{{ package.id }} </strong> está actualizado para su rastreo en la plataforma</span>
+      {% if package.status == 'E' %}
+            <p>Se ha enviado un correo a la dirección: <strong>{{ package.email_receiver }} </strong> advirtiendo de paquete entregado a destino</p>
+        {% endif %}
+  {% else %}
+    <span>No hay ID para su rastreo en la plataforma</span>
+  {% endif %}
+{% endblock %}
