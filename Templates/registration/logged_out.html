@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+  <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            <p>Logged out!</p>
+
+            <a href="{% url 'login'%}">Click here to login again.</a>
+        </div>
+        <div class="col-sm-4"></div>
+  </div>
+
+
+
+{% endblock %}

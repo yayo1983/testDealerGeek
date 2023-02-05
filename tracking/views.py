@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .factoryf import FactoryForm
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):

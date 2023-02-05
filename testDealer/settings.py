@@ -36,6 +36,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+LOGIN_REDIRECT_URL = '/'
 
 # Application definition
 

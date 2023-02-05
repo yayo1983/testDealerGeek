@@ -16,11 +16,17 @@
 		<div class="col-sm-4">
             <nav>
                 <ul id='menu'>
-                  <li><a href='/'>Inicio</a></li>
-                  <li><a href="{% url 'tracking-package' %}">Rastrear paquete</a></li>
+                  {% if user.is_authenticated %}
+                      <li><a href='/'>Usuario: {{ user.get_username }}</a></li>
+                      <li><a href="{% url 'logout'%}">Salir de sesion</a></li>
+                  {% else %}
+                    <li><a href="{% url 'login'%}">Autenticar</a></li>
+                  {% endif %}
+                 <li><a href="{% url 'tracking-package' %}">Rastrear paquete</a></li>
                   <li><a href="{% url 'create-package' %}">Registrar paquete</a></li>
                   <li><a href="{% url 'update-package' %}">Actualizar paquete</a></li>
                 </ul>
+
 	        </nav>
         </div>
 		<div class="col-sm-4"></div>
