@@ -99,7 +99,7 @@ class UpdateTrackingForm(forms.Form):
                 tracking.status = self.cleaned_data['status']
             tracking.date = datetime.now()
             tracking.save()
-            return package.id
+            return package
         except IntegrityError:
             return False
         except Package.DoesNotExist:

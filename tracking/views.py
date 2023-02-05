@@ -42,7 +42,7 @@ def update_package(request):
             if result:
                 if result == -1:
                     return redirect('update-package', {'form': form})
-                return render(request, 'package_updated.html', {'ID': result})
+                return render(request, 'package_updated.html', {'package': result})
             return redirect('update-package', {'form': form})
     form = factory.create_form('UpdateTrackingForm')
     return render(request, 'package_update_form.html', {'package': {}, 'tracking_package': [], 'form': form})
