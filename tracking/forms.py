@@ -1,12 +1,14 @@
 from django import forms
 from .models import Package, Tracking, Status
-from datetime import datetime
 from django.db import transaction
 from django.db import IntegrityError
 from .factorym import FactoryModel
 from .serializers import TrackingSerializers
 from .sendemail import send_user_mail
 from django.shortcuts import get_object_or_404
+from datetime import datetime
+from django.core import validators
+from django.core.exceptions import ValidationError
 
 
 class PackageForm(forms.Form):
@@ -24,21 +26,21 @@ class PackageForm(forms.Form):
         try:
             factory = FactoryModel()
             package = factory.create_model('Package')
-            package.description = self.cleaned_data['description']
+            package.description = self.cleaned_data['description'].strip()
             package.size = self.cleaned_data['size']
-            package.email_receiver = self.cleaned_data['email_receiver']
+            package.email_receiver = self.cleaned_data['email_receiver'].strip()
             package.status = 'I'
             package.save()
 
             tracking = factory.create_model('Tracking')
-            tracking.address = self.cleaned_data['address_origin']
+            tracking.address = self.cleaned_data['address_origin'].strip()
             tracking.date = datetime.now()
             tracking.package = package
             tracking.status = 'I'
             tracking.save()
 
             tracking = factory.create_model('Tracking')
-            tracking.address = self.cleaned_data['address_destination']
+            tracking.address = self.cleaned_data['address_destination'].strip()
             tracking.package = package
             tracking.status = 'E'
             tracking.save()
@@ -57,15 +59,15 @@ class TrackingForm(forms.Form):
                 data.pop(index)
         return data
 
-    def update(self, id):
-        try:
-            package = get_object_or_404(Package, pk=id)
+    def search_packages(self):
+       try:
+            package = get_object_or_404(Package, pk=self.cleaned_data['id'].strip())
             trackings = Tracking.objects.filter(package=package)
             serializer_tracking = TrackingSerializers(trackings, many=True)
             data = self.put_status_e_to_end(serializer_tracking.data)
-            return [data, package, Status]
-        except:
-            return -1
+            return [package, data, Status]
+       except:
+          return False
 
 
 class UpdateTrackingForm(forms.Form):
@@ -110,7 +112,8 @@ class ReportPackageForm(forms.Form):
 
     def report_traquings(self):
         try:
-            trackings = Tracking.objects.filter(date=self.cleaned_data['date'])
+            format_date = datetime.strptime(self.cleaned_data['date'].strip(), "%Y-%m-%d").date()
+            trackings = Tracking.objects.filter(date__date=format_date)
             serializer_tracking = TrackingSerializers(trackings, many=True)
             return serializer_tracking.data
         except:

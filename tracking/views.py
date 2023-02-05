@@ -15,21 +15,21 @@ def create_package(request):
             result = form.save_create()
             if result:
                 return render(request, 'package_registered.html', {'ID': result})
-            return redirect('update-package')
-    else:
-        form = factory.create_form('PackageForm')
+        else:
+            render(request, 'package_form.html', {'form': form})
+    form = factory.create_form('PackageForm')
     return render(request, 'package_form.html', {'form': form})
 
 
 def tracking_package(request):
     factory = FactoryForm()
-    form = factory.create_form('TrackingForm', request.POST)
     if request.method == "POST":
+        form = factory.create_form('TrackingForm', request.POST)
         if form.is_valid():
-            result = form.update(request.POST["id"])
-            if result != -1 :
+            result = form.search_packages()
+            if result:
                 return render(request, 'tracking_package.html',
-                      {'package': result[1], 'tracking_package': result[0], 'Status': result[2], 'form': form})
+                      {'package': result[0], 'tracking_package': result[1], 'Status': result[2], 'form': form})
     form = factory.create_form('TrackingForm')
     return render(request, 'tracking_package.html', {'package': {}, 'tracking_package': [], 'form': form })
 
@@ -41,10 +41,8 @@ def update_package(request):
         if form.is_valid():
             result = form.save_update()
             if result:
-                if result == -1:
-                    return redirect('update-package', {'form': form})
-                return render(request, 'package_updated.html', {'package': result})
-            return redirect('update-package', {'form': form})
+                if result != -1:
+                    return render(request, 'package_updated.html', {'package': result})
     form = factory.create_form('UpdateTrackingForm')
     return render(request, 'package_update_form.html', {'package': {}, 'tracking_package': [], 'form': form})
 
@@ -55,7 +53,7 @@ def report_package(request):
     if request.method == "POST":
         form = factory.create_form('ReportPackageForm', request.POST)
         if form.is_valid():
-            trackings = form.report_traquings()
+            trackings = form.report_traquings(request.POST["date"].strip())
             if trackings:
                 return render(request, 'package_report_form.html', {'trackings': trackings, 'form': form})
     form = factory.create_form('ReportPackageForm')
