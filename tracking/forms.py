@@ -3,9 +3,14 @@ from .models import Package, Tracking, Status
 from datetime import datetime
 from django.db import transaction
 from django.db import IntegrityError
+from .Factory import Factory
 
 
 class PackageForm(forms.Form):
+
+    def __init__(self):
+        self.__factory__ = Factory()
+
     description = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}), min_length=4, max_length=250, label='Descripción')
     size = forms.FloatField(required=True, max_value=100000, min_value=0,
                      widget=forms.NumberInput(attrs={'id': 'form_homework', 'class': 'form-control' }), label='Tamaño')
@@ -17,21 +22,21 @@ class PackageForm(forms.Form):
     @transaction.atomic()
     def save_create(self):
         try:
-            package = Package()
+            package = self.__factory__.create_object('Package')
             package.description = self.cleaned_data['description']
             package.size = self.cleaned_data['size']
             package.email_receiver = self.cleaned_data['email_receiver']
             package.status = 'I'
             package.save()
 
-            tracking = Tracking()
+            tracking = self.__factory__.create_object('Tracking')
             tracking.address = self.cleaned_data['address_origin']
             tracking.date = datetime.now()
             tracking.package = package
             tracking.status = 'I'
             tracking.save()
 
-            tracking = Tracking()
+            tracking = self.__factory__.create_object('Tracking')
             tracking.address = self.cleaned_data['address_destination']
             tracking.package = package
             tracking.status = 'E'
@@ -53,6 +58,9 @@ class TrackingForm(forms.Form):
 
 
 class UpdateTrackingForm(forms.Form):
+    def __init__(self):
+        self.__factory__ = Factory()
+
     def choices(em):
         return [(e.name, e.value) for e in em]
 
@@ -69,7 +77,7 @@ class UpdateTrackingForm(forms.Form):
             package.save()
             if self.cleaned_data['status'] == 'I':
                 return -1
-            tracking = Tracking()
+            tracking = self.__factory__.create_object('Tracking')
             if self.cleaned_data['status'] == 'E':
                 tracking = Tracking.objects.filter(package=package, status='E')
             else:
