@@ -39,41 +39,6 @@
                     <div class="col-sm-4"></div>
                 </div>
 
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div class="col-sm-4">
-                        {% if tracking_package %}
-                        {% load djutils %}
-                            <h3>Datos de rastreo para el paquete</h3>
-                        <p><strong>Estado actual del paquete: </strong>{{ Status|get_by_name:package.status }}</p>
-                            <table align="center" style="margin: 2px auto;">
-                                <thead>
-                                    <tr align="center">
-                                        <th>Identificador</th>
-                                         <th>Estado por ubicación </th>
-                                        <th>Fecha</th>
-                                        <th>Ubicación</th>
-                                         <th>Tipo de Ubicación</th>
 
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for element in tracking_package %}
-                                        <tr align="center">
-                                            <td>{{ element.id }}</td>
-                                            <td>{{ Status|get_by_name:element.status }}</td>
-                                            <td>{{ element.date  }} {{element.date|date:"SHORT_DATE_FORMAT"}} {{element.date|time:"h:i a"}}</td>
-                                            <td>{{ element.address }}</td>
-                                            <td>{% if element.status == 'I' %} Origen {% elif element.status == 'E' %} Destino {% else %} Ciudad de tránsito {% endif %} </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        {% else %}
-                        <h3> No hay rastro para el paquete con ID utilizado</h3>
-                        {% endif %}
-                    </div>
-                    <div class="col-sm-4"></div>
-                </div>
 
 {% endblock %}

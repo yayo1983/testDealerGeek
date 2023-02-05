@@ -55,11 +55,8 @@ def report_package(request):
     if request.method == "POST":
         form = factory.create_form('ReportPackageForm', request.POST)
         if form.is_valid():
-            result = form.save_update()
-            if result:
-                if result == -1:
-                    return redirect('package_report_form', {'form': form})
-                return render(request, 'package_report_form.html', {'package': result})
-            return redirect('package_report_form', {'form': form})
-    form = factory.create_form('UpdateTrackingForm')
-    return render(request, 'package_report_form.html', {'package': {}, 'tracking_package': [], 'form': form})
+            trackings = form.report_traquings()
+            if trackings:
+                return render(request, 'package_report_form.html', {'trackings': trackings, 'form': form})
+    form = factory.create_form('ReportPackageForm')
+    return render(request, 'package_report_form.html', {'form': form, 'trackings': []})
