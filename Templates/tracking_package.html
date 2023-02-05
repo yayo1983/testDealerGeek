@@ -17,45 +17,60 @@
 
                 <div class="row">
                     <div class="col-sm-4"></div>
-                    <div class="col-sm-4"><h3>Rastrear paquete: {{package.id}}</h3></div>
+                    <div class="col-sm-4"><h3>Rastrear paquete: </h3></div>
                     <div class="col-sm-4"></div>
                 </div>
-                <form id='form_tracking' method='post' enctype='multipart/form-data'>
-                    <div class="row">
-                        <div class="col-sm-4"></div>
-                        <div class="col-sm-4">
-                            {% csrf_token %}
-                            {{form.as_p}}
-                            <p><input type='submit' value='Buscar' class="btn btn-primary"/></p>
-                        </div>
-                        <div class="col-sm-4"></div>
-                    </div>
-                </form>
-              {% if tracking_package %}
-                  {% load djutils %}
-                  <h1>Datos de rastreo para el paquete: {{ package.id }}</h1>
-                    <table align="center" style="margin: 2px auto;">
-                        <thead>
-                            <tr align="center">
-                                <th>Identificador</th>
-                                 <th>Estado actual del paquete </th>
-                                <th>Fecha</th>
-                                <th>Ubicación</th>
-                                 <th>Tipo de Ubicación</th>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for element in tracking_package %}
-                                <tr align="center">
-                                    <td>{{ element.id }}</td>
-                                    <td>{{ Status|get_by_name:package.status }}</td>
-                                    <td>{{ element.date  }} {{element.date|date:"SHORT_DATE_FORMAT"}} {{element.date|time:"h:i a"}}</td>
-                                    <td>{{ element.address }}</td>
-                                    <td>{% if element.status == 'I' %} Origen {% elif element.status == 'E' %} Destino {% else %} Ciudad de tránsito {% endif %} </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-             {% endif %}
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4">
+                        <form id='form_tracking' method='post' enctype='multipart/form-data'>
+                            <div class="row">
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-4">
+                                    {% csrf_token %}
+                                    {{form.as_p}}
+                                    <p><input type='submit' value='Buscar' class="btn btn-primary"/></p>
+                                </div>
+                                <div class="col-sm-4"></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-sm-4"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4">
+                        {% if tracking_package %}
+                        {% load djutils %}
+                            <h1>Datos de rastreo para el paquete: {{ package.id }}</h1>
+                            <table align="center" style="margin: 2px auto;">
+                                <thead>
+                                    <tr align="center">
+                                        <th>Identificador</th>
+                                         <th>Estado actual del paquete </th>
+                                        <th>Fecha</th>
+                                        <th>Ubicación</th>
+                                         <th>Tipo de Ubicación</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for element in tracking_package %}
+                                        <tr align="center">
+                                            <td>{{ element.id }}</td>
+                                            <td>{{ Status|get_by_name:package.status }}</td>
+                                            <td>{{ element.date  }} {{element.date|date:"SHORT_DATE_FORMAT"}} {{element.date|time:"h:i a"}}</td>
+                                            <td>{{ element.address }}</td>
+                                            <td>{% if element.status == 'I' %} Origen {% elif element.status == 'E' %} Destino {% else %} Ciudad de tránsito {% endif %} </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-4"></div>
+                </div>
+
 {% endblock %}
