@@ -5,9 +5,8 @@ from django.db import transaction
 from django.db import IntegrityError
 from .factorym import FactoryModel
 from .serializers import TrackingSerializers
-from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import get_template
+from .sendemail import send_user_mail
+from django.shortcuts import get_object_or_404
 
 
 class PackageForm(forms.Form):
@@ -60,7 +59,7 @@ class TrackingForm(forms.Form):
 
     def update(self, id):
         try:
-            package = Package.objects.get(pk=id)
+            package = get_object_or_404(Package, pk=id)
             trackings = Tracking.objects.filter(package=package)
             serializer_tracking = TrackingSerializers(trackings, many=True)
             data = self.put_status_e_to_end(serializer_tracking.data)
@@ -82,7 +81,7 @@ class UpdateTrackingForm(forms.Form):
     @transaction.atomic()
     def save_update(self):
         try:
-            package = Package.objects.get(pk=self.cleaned_data['id'])
+            package = get_object_or_404(Package, pk=self.cleaned_data['id'])
             package.status = self.cleaned_data['status']
             package.save()
             if self.cleaned_data['status'] == 'I':
@@ -91,7 +90,7 @@ class UpdateTrackingForm(forms.Form):
             tracking = factory.create_model('Tracking')
             if self.cleaned_data['status'] == 'E':
                 tracking = Tracking.objects.filter(package=package, status='E')
-                self.send_user_mail(package.email_receiver, package.id)
+                send_user_mail(package.email_receiver, package.id)
             else:
                 tracking.address = self.cleaned_data['address']
                 tracking.date = datetime.now()
@@ -104,15 +103,3 @@ class UpdateTrackingForm(forms.Form):
             return False
         except Package.DoesNotExist:
             return False
-
-    def send_user_mail(email, id):
-        subject = 'Correo de aviso de paquete arrivado'
-        template = get_template('Templates/email_template.html')
-        content = template.render({
-            'email': email,
-            'id': id
-        })
-
-        message = EmailMultiAlternatives(subject=subject, body='', from_email=settings.EMAIL_HOST_USER, to=[email])
-        message.attach_alternative(content, 'text/html')
-        message.send()
