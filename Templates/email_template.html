@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block titulo %} Tests de Dealer- Correo {% endblock %}
+{% block css %}
+  <style>
+	img { width:100px; }
+  </style>
+{% endblock %}
+{% block encabezado %}
+  <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4"><h1>Menú</h1></div>
+        <div class="col-sm-4"></div>
+  </div>
+{% endblock %}
+
+{% block contenido %}
+        <div class="row">
+			<div class="col-sm-4"></div>
+			<div class="col-sm-4"><h2>Buenas {{email}}, el paquete: {{id}} ha sido entregado a la oficina de paquetería de destino</h2></div>
+			<div class="col-sm-4"></div>
+	    </div>
+
+{% endblock %}

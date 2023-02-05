@@ -1,9 +1,9 @@
 from .models import Package, Tracking
 
 
-class Factory:
+class FactoryModel:
 
-    def create_object(self, name):
+    def create_model(self, name):
         if "Package" == name:
             return Package()
 

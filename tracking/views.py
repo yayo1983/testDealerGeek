@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import PackageForm, TrackingForm, UpdateTrackingForm
-from .models import Package, Tracking, Status
-from .serializers import TrackingSerializers
+from .factoryf import FactoryForm
 
 
 def index(request):
@@ -9,41 +7,36 @@ def index(request):
 
 
 def create_package(request):
+    factory = FactoryForm()
     if request.method == "POST":
-        form = PackageForm(request.POST)
+        form = factory.create_form('PackageForm', request.POST)
         if form.is_valid():
             result = form.save_create()
             if result:
                 return render(request, 'package_registered.html', {'ID': result})
             return redirect('update-package')
     else:
-        form = PackageForm()
+        form = factory.create_form('PackageForm')
     return render(request, 'package_form.html', {'form': form})
 
 
 def tracking_package(request):
-    try:
-        form = TrackingForm(request.POST)
-        if request.method == "POST":
-            package = Package.objects.get(pk=request.POST["id"])
-            if form.is_valid():
-                trackings = Tracking.objects.filter(package=package)
-                serializer_tracking = TrackingSerializers(trackings, many=True)
-                data = form.put_status_e_to_end(serializer_tracking.data)
-                for index, obj in enumerate(data):
-                    if obj['status'] == 'E':
-                        data.append(obj)
-                        data.pop(index)
+    factory = FactoryForm()
+    form = factory.create_form('TrackingForm', request.POST)
+    if request.method == "POST":
+        if form.is_valid():
+            result = form.update(request.POST["id"])
+            if result != -1 :
                 return render(request, 'tracking_package.html',
-                          {'package': package, 'tracking_package': data, 'Status': Status, 'form': form})
-        return render(request, 'tracking_package.html', {'form': form})
-    except Package.DoesNotExist:
-        return render(request, 'tracking_package.html', {'package': {}, 'tracking_package': [], 'form': form })
+                      {'package': result[1], 'tracking_package': result[0], 'Status': result[2], 'form': form})
+    form = factory.create_form('TrackingForm')
+    return render(request, 'tracking_package.html', {'package': {}, 'tracking_package': [], 'form': form })
 
 
 def update_package(request):
+    factory = FactoryForm()
     if request.method == "POST":
-        form = UpdateTrackingForm(request.POST)
+        form = factory.create_form('UpdateTrackingForm', request.POST)
         if form.is_valid():
             result = form.save_update()
             if result:
@@ -51,5 +44,5 @@ def update_package(request):
                     return redirect('update-package', {'form': form})
                 return render(request, 'package_updated.html', {'ID': result})
             return redirect('update-package', {'form': form})
-    form = UpdateTrackingForm()
+    form = factory.create_form('UpdateTrackingForm')
     return render(request, 'package_update_form.html', {'package': {}, 'tracking_package': [], 'form': form})
