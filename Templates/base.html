@@ -3,15 +3,16 @@
 <head>
   <meta charset='utf-8'>
   <title>Aplicación test de Dealer {% block titulo %}{% endblock %}</title>
+    {% load static %}
     {% load bootstrap4 %}
     {% bootstrap_css %}
-    {% block style_css %}{% endblock %}
-     <style>
-    .errorlist {
+   <style>
+       .errorlist {
         list-style-type: none;
         color: red;
-    }
- </style>
+ }
+   </style>
+    {% block style_css %}{% endblock %}
 </head>
 <body>
 

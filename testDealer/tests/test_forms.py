@@ -1,3 +1,5 @@
+from unittest import TestCase
+
 from django.test import TestCase
 
 from tracking.forms import PackageForm
@@ -13,3 +15,21 @@ class PackageFormTest(TestCase):
         form_data = {'email_receiver': email}
         form = PackageForm(data=form_data)
         self.assertFalse(form.is_valid())
+
+
+class Test(TestCase):
+    pass
+
+
+class Test(TestCase):
+    def test_package_form(self):
+        self.fail()
+
+    def test_tracking_form(self):
+        self.fail()
+
+    def test_update_tracking_form(self):
+        self.fail()
+
+    def test_report_package_form(self):
+        self.fail()
