@@ -7,8 +7,6 @@ from .serializers import TrackingSerializers
 from .sendemail import send_user_mail
 from django.shortcuts import get_object_or_404
 from datetime import datetime
-from django.core import validators
-from django.core.exceptions import ValidationError
 
 
 class PackageForm(forms.Form):
@@ -20,13 +18,6 @@ class PackageForm(forms.Form):
     address_destination = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}),
                                      min_length=4, max_length=250, label='Dirección de destino')
     email_receiver = forms.EmailField(required=True, min_length=4, max_length=250, label='Correo', widget=forms.TextInput(attrs={'class': 'form-control'}))
-
-    def clean_email_receiver(self):
-        email = self.cleaned_data.get('email_receiver')
-
-        if Package.objects.filter(email_receiver=email).count():
-            raise forms.ValidationError(("Esta dirección de correo electrónico ya está en uso. Proporcione una dirección de correo electrónico diferente."))
-        return email
 
     @transaction.atomic()
     def save_create(self):
@@ -59,6 +50,14 @@ class PackageForm(forms.Form):
 class TrackingForm(forms.Form):
     id = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}), min_length=4, max_length=250, label='Identificador')
 
+    def clean(self):
+        super(TrackingForm, self).clean()
+        try:
+            Package.objects.get(pk=self.cleaned_data['id'])
+        except Package.DoesNotExist:
+            raise forms.ValidationError({'id': ["No es un válido indentificador",]} )
+        return self.cleaned_data
+
     def put_status_e_to_end(self, data):
         for index, obj in enumerate(data):
             if obj['status'] == 'E':
@@ -67,14 +66,14 @@ class TrackingForm(forms.Form):
         return data
 
     def search_packages(self):
-       try:
-            package = get_object_or_404(Package, pk=self.cleaned_data['id'].strip())
+        try:
+            package = Package.objects.get(pk=self.cleaned_data['id'])
             trackings = Tracking.objects.filter(package=package)
             serializer_tracking = TrackingSerializers(trackings, many=True)
             data = self.put_status_e_to_end(serializer_tracking.data)
             return [package, data, Status]
-       except:
-          return False
+        except Package.DoesNotExist:
+            return False
 
 
 class UpdateTrackingForm(forms.Form):
@@ -82,23 +81,35 @@ class UpdateTrackingForm(forms.Form):
     def choices(em):
         return [(e.name, e.value) for e in em]
 
-    id = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}), min_length=4, max_length=250, label='Identificador')
+    id = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}), min_length=4, max_length=250, label='Identificador',
+                         error_messages={'required': 'El identificador es requerido'})
     address = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}),
                                      min_length=4, max_length=250, label='Lugar del paquete')
     status = forms.ChoiceField(label='Estado', choices=choices(Status), widget=forms.Select(attrs={'class': 'form-control'}))
 
+    def clean(self):
+        super(UpdateTrackingForm, self).clean()
+        try:
+            status = self.cleaned_data['status']
+            package = Package.objects.get(pk=self.cleaned_data['id'])
+            if status == 'I':
+                raise forms.ValidationError("El paquete ya no debe volver a tener el estado Iniciado" )
+            if package.status == 'E' and status != 'A':
+                raise forms.ValidationError("Solo se puede cambiar para el estado Aceptado cuando el paquete tiene el estado de Entregado" )
+        except Package.DoesNotExist:
+            raise forms.ValidationError("No es un válido indentificador")
+        return self.cleaned_data
+
     @transaction.atomic()
     def save_update(self):
         try:
-            package = get_object_or_404(Package, pk=self.cleaned_data['id'])
+            package = Package.objects.get(pk=self.cleaned_data['id'])
             package.status = self.cleaned_data['status']
             package.save()
-            if self.cleaned_data['status'] == 'I':
-                return -1
             factory = FactoryModel()
             tracking = factory.create_model('Tracking')
-            if self.cleaned_data['status'] == 'E':
-                tracking = Tracking.objects.filter(package=package, status='E')
+            if self.cleaned_data['status'] is 'E':
+                tracking = Tracking.objects.filter(package=package).filter(status='E').first()
                 send_user_mail(package.email_receiver, package.id)
             else:
                 tracking.address = self.cleaned_data['address']
@@ -107,15 +118,22 @@ class UpdateTrackingForm(forms.Form):
                 tracking.status = self.cleaned_data['status']
             tracking.date = datetime.now()
             tracking.save()
-            return package
         except IntegrityError:
-            return False
-        except Package.DoesNotExist:
-            return False
+            raise forms.ValidationError("Error, contacte al admnistrador")
+        return package
 
 
 class ReportPackageForm(forms.Form):
     date_report = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), label='Fecha para reportar')
+
+    def clean(self):
+        super(ReportPackageForm, self).clean()
+        date_report = self.cleaned_data['date_report']
+
+        if date_report == "":
+            self._errors['date_report'] = self.error_class(['La fecha para reportar no puede ser vacío'])
+
+        return self.cleaned_data
 
     def report_trackings(self):
         try:

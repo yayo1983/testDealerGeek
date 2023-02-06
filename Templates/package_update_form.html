@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
 {% block titulo %} Tests de Dealer- Actualizar paquete {% endblock %}
-{% block css %}
-  <style>
-	img { width:100px; }
-  </style>
+{% block style_css %}
+
 {% endblock %}
+
 {% block encabezado %}
 	<div class="row">
 		<div class="col-sm-4"></div>
@@ -20,8 +19,8 @@
 		<div class="col-sm-4"><h1>Actualizar paquete </h1></div>
 		<div class="col-sm-4"></div>
 	</div>
-	<form id='form_package' method='post' enctype='multipart/form-data'>
-					{% csrf_token %}
+	<form id='form_package' method='post' enctype='multipart/form-data' novalidate>
+		{% csrf_token %}
 		<div class="row">
 			<div class="col-sm-4"></div>
 				<div class="col-sm-4">

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .factoryf import FactoryForm
 from django.contrib.auth.decorators import login_required
-from .models import Status
+
 
 def index(request):
     return render(request, 'index.html')
@@ -28,10 +28,11 @@ def tracking_package(request):
         if form.is_valid():
             result = form.search_packages()
             if result:
-                return render(request, 'tracking_package.html',
-                      {'package': result[0], 'tracking_package': result[1], 'Status': result[2], 'form': form})
+                context = {'package': result[0], 'tracking_package': result[1], 'Status': result[2], 'form': form}
+                return render(request, 'tracking_package.html', context)
+        return render(request, 'tracking_package.html', {'form': form})
     form = factory.create_form('TrackingForm')
-    return render(request, 'tracking_package.html', {'package': {}, 'tracking_package': [], 'form': form })
+    return render(request, 'tracking_package.html', {'form': form})
 
 
 def update_package(request):
@@ -39,12 +40,13 @@ def update_package(request):
     if request.method == "POST":
         form = factory.create_form('UpdateTrackingForm', request.POST)
         if form.is_valid():
-            result = form.save_update()
-            if result:
-                if result != -1:
-                    return render(request, 'package_updated.html', {'package': result})
+            package = form.save_update()
+            if package:
+                return render(request, 'package_updated.html', {'package': package})
+        else:
+            return render(request, 'package_update_form.html', {'form': form})
     form = factory.create_form('UpdateTrackingForm')
-    return render(request, 'package_update_form.html', {'package': {}, 'tracking_package': [], 'form': form})
+    return render(request, 'package_update_form.html', {'package': {}, 'form': form})
 
 
 @login_required
@@ -55,6 +57,7 @@ def report_package(request):
         if form.is_valid():
             result = form.report_trackings()
             if result:
-                return render(request, 'package_report_form.html', {'trackings': result[0], 'Status': result[1], 'form': form, 'date': request.POST['date_report']})
+                context = {'trackings': result[0], 'Status': result[1], 'form': form, 'date': request.POST['date_report']}
+                return render(request, 'package_report_form.html', context)
     form = factory.create_form('ReportPackageForm')
     return render(request, 'package_report_form.html', {'form': form, 'trackings': []})

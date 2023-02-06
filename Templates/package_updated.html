@@ -6,17 +6,31 @@
   </style>
 {% endblock %}
 {% block encabezado %}
-  <h1>Menú</h1>
+   <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4"><h1>Menú</h1></div>
+        <div class="col-sm-4"></div>
+  </div>
 {% endblock %}
 
 {% block contenido %}
-<h2>Paquete actualizado</h2>
-  {% if package %}
+  <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4"><h2>Paquete actualizado</h2></div>
+        <div class="col-sm-4"></div>
+  </div>
+  <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+             {% if package %}
       <span>El paquete con el ID: <strong>{{ package.id }} </strong> está actualizado para su rastreo en la plataforma</span>
       {% if package.status == 'E' %}
             <p>Se ha enviado un correo a la dirección: <strong>{{ package.email_receiver }} </strong> advirtiendo de paquete entregado a destino</p>
         {% endif %}
-  {% else %}
-    <span>No hay ID para su rastreo en la plataforma</span>
-  {% endif %}
+      {% else %}
+        <span>No hay ID para su rastreo en la plataforma</span>
+      {% endif %}
+        </div>
+        <div class="col-sm-4"></div>
+  </div>
 {% endblock %}
