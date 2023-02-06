@@ -5,8 +5,8 @@ from django.db import IntegrityError
 from .factorym import FactoryModel
 from .serializers import TrackingSerializers
 from .sendemail import send_user_mail
-from django.shortcuts import get_object_or_404
-from datetime import datetime
+import datetime
+import xlwt
 
 
 class PackageForm(forms.Form):
@@ -142,3 +142,33 @@ class ReportPackageForm(forms.Form):
             return [serializer_tracking.data, Status]
         except:
             return False
+
+    def export_users_xls(self, response, date):
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Users Data')  # this will make a sheet named Users Data
+
+        # Sheet header, first row
+        row_num = 0
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+
+        columns = ['ID de rastreo ', 'Estado del rastreo', 'Fecha de rastreo', 'Ubicación']
+
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num], font_style)  # at 0 row 0 column
+
+        # Sheet body, remaining rows
+        font_style = xlwt.XFStyle()
+
+        rows = Tracking.objects.filter(date__date=date).values_list('id', 'status', 'date', 'address')
+        rows = [[x.strftime("%Y-%m-%d %H:%M") if isinstance(x, datetime.datetime) else x for x in row] for row in rows]
+        for row in rows:
+            row_num += 1
+            for col_num in range(len(row)):
+                ws.write(row_num, col_num, row[col_num], font_style)
+
+        wb.save(response)
+
+        return response
+

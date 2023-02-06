@@ -44,6 +44,7 @@
             {% if trackings %}
             {% load djutils %}
                 <h3>Datos de rastreo para la fecha</h3>
+                <p><a href="{% url 'export_excel' date %}">Exportar a Microsoft Excel</a></p>
                 <table align="center" style="margin: 2px auto;">
                     <thead>
                         <tr align="center">

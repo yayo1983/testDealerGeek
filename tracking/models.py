@@ -30,7 +30,7 @@ class Package(models.Model):
         db_table = "package"
 
     def __str__(self):
-        return self.description
+        return self.id.uuid1()
 
 
 class Tracking(models.Model):
@@ -46,3 +46,10 @@ class Tracking(models.Model):
     def __str__(self):
         return self.address
 
+    @property
+    def status_package(self):
+        return self.package.status
+
+    @property
+    def id_package(self):
+        return str(self.package.id.uuid1())

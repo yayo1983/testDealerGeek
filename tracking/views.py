@@ -1,6 +1,8 @@
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import render
 from .factoryf import FactoryForm
-from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -61,3 +63,14 @@ def report_package(request):
                 return render(request, 'package_report_form.html', context)
     form = factory.create_form('ReportPackageForm')
     return render(request, 'package_report_form.html', {'form': form, 'trackings': []})
+
+
+@login_required
+def export_users_xls(request, dater):
+    if request.method == "GET":
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="trackings.xls"'
+        factory = FactoryForm()
+        form = factory.create_form('ReportPackageForm', request.POST)
+        response = form.export_users_xls(response, dater)
+        return response

@@ -13,5 +13,5 @@ class ViewsTestCase(TestCase):
         response = self.client.get('/package/update')
         self.assertEqual(response.status_code, 200)
         response = self.client.get('/package/report')
-        # Is 302 because check if user authenticated
+        # Is 302 because check if authenticated user
         self.assertEqual(response.status_code, 302)
