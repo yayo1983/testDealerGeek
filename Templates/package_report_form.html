@@ -58,9 +58,9 @@
                     <tbody>
                         {% for element in trackings %}
                             <tr align="center">
-                                <td>{{ element.package.id }}</td>
-                                <td>{{ Status|get_by_name:element.package.status }}</td>
-                                <td>{{ element.date  }} {{element.date|date:"SHORT_DATE_FORMAT"}} {{element.date|time:"h:i a"}}</td>
+                                <td>{{ element.package }}</td>
+                                <td>{{ Status|get_by_name:element.status }}</td>
+                                <td>{{ element.date  }}</td>
                                 <td>{{ element.address }}</td>
                                 <td>{% if element.status == 'I' %} Origen {% elif element.status == 'E' %} Destino {% else %} Ciudad de tránsito {% endif %} </td>
                             </tr>

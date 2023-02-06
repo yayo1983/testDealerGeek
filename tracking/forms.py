@@ -115,13 +115,12 @@ class UpdateTrackingForm(forms.Form):
 
 
 class ReportPackageForm(forms.Form):
-    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), label='Fecha para reportar')
+    date_report = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), label='Fecha para reportar')
 
-    def report_traquings(self):
+    def report_trackings(self):
         try:
-            format_date = datetime.strptime(self.cleaned_data['date'].strip(), "%Y-%m-%d").date()
-            trackings = Tracking.objects.filter(date__date=format_date)
+            trackings = Tracking.objects.filter(date__date=self.cleaned_data['date_report'])
             serializer_tracking = TrackingSerializers(trackings, many=True)
-            return serializer_tracking.data
+            return [serializer_tracking.data, Status]
         except:
             return False

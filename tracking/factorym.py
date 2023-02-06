@@ -10,4 +10,4 @@ class FactoryModel:
         elif "Tracking" == name:
             return Tracking()
         else:
-            raise Exception("Sorry, class not implemented")
+            raise Exception("Lo siento, clase no implementada")

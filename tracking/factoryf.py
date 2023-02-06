@@ -25,4 +25,4 @@ class FactoryForm:
             return ReportPackageForm(parameter)
 
         else:
-            raise Exception("Sorry, class not implemented")
+            raise Exception("Lo siento, clase no implementada")
