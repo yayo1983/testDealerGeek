@@ -9,7 +9,7 @@ class PackageFormTest(TestCase):
         self.assertTrue(form.fields['description'].label == 'Descripción' or form.fields['size'].label == 'Tamaño')
 
     def test_renew_form_date_in_past(self):
-        email = 'sdsds.sdd'
-        form_data = {'renewal_date': email}
+        email = 'yazanenator@gmail.com'
+        form_data = {'email_receiver': email}
         form = PackageForm(data=form_data)
         self.assertFalse(form.is_valid())

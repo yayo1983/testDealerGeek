@@ -21,6 +21,13 @@ class PackageForm(forms.Form):
                                      min_length=4, max_length=250, label='Dirección de destino')
     email_receiver = forms.EmailField(required=True, min_length=4, max_length=250, label='Correo', widget=forms.TextInput(attrs={'class': 'form-control'}))
 
+    def clean_email_receiver(self):
+        email = self.cleaned_data.get('email_receiver')
+
+        if Package.objects.filter(email_receiver=email).count():
+            raise forms.ValidationError(("Esta dirección de correo electrónico ya está en uso. Proporcione una dirección de correo electrónico diferente."))
+        return email
+
     @transaction.atomic()
     def save_create(self):
         try:

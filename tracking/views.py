@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from .factoryf import FactoryForm
 from django.contrib.auth.decorators import login_required
+from .serializers import TrackingSerializers
+from .models import Package, Tracking, Status
+from django.shortcuts import get_object_or_404
 
 
 def index(request):
@@ -53,7 +56,7 @@ def report_package(request):
     if request.method == "POST":
         form = factory.create_form('ReportPackageForm', request.POST)
         if form.is_valid():
-            trackings = form.report_traquings(request.POST["date"].strip())
+            trackings = form.report_traquings()
             if trackings:
                 return render(request, 'package_report_form.html', {'trackings': trackings, 'form': form})
     form = factory.create_form('ReportPackageForm')
