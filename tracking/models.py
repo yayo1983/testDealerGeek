@@ -53,3 +53,8 @@ class Tracking(models.Model):
     @property
     def id_package(self):
         return str(self.package.id.uuid1())
+
+    @classmethod
+    def create(cls, date, address, package, status):
+        tracking = cls(date, address, package, status)
+        return tracking
